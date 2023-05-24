@@ -7,7 +7,7 @@ import { ErrorMessages } from '../shared/constants';
 export const getUsers = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const users = await User.find({});
@@ -20,7 +20,7 @@ export const getUsers = async (
 export const getUserById = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { userId } = req.params;
   try {
@@ -38,7 +38,7 @@ export const getUserById = async (
 export const createUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { name, about, avatar } = req.body;
   try {
@@ -52,7 +52,7 @@ export const createUser = async (
 export const updateProfile = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = req.user._id;
   const { name, about } = req.body;
@@ -63,7 +63,7 @@ export const updateProfile = async (
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
     if (!user) {
       next(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
@@ -78,7 +78,7 @@ export const updateProfile = async (
 export const updateAvatar = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = req.user._id;
   const { avatar } = req.body;
@@ -89,7 +89,7 @@ export const updateAvatar = async (
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
     if (!user) {
       next(new NotFoundError(ErrorMessages.USER_NOT_FOUND));

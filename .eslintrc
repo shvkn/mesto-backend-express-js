@@ -32,7 +32,6 @@
     ]
   },
   "rules": {
-    "prettier/prettier": "error",
     "import/extensions": [
       "error",
       "ignorePackages",

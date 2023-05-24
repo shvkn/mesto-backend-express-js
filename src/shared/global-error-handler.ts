@@ -8,7 +8,7 @@ const globalErrorHandler = (
   req: Request,
   res: Response,
   // eslint-disable-next-line no-unused-vars
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { message, name } = err;
 

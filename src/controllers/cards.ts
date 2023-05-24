@@ -7,7 +7,7 @@ import { ErrorMessages } from '../shared/constants';
 export const getCards = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const cards = await Card.find({});
@@ -20,7 +20,7 @@ export const getCards = async (
 export const createCard = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { name, link } = req.body;
   const owner = req.user._id;
@@ -35,7 +35,7 @@ export const createCard = async (
 export const deleteCard = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { cardId } = req.params;
   try {
