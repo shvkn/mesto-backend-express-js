@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
 
+import userRoutes from './routes/users';
+
 dotenv.config();
 const { PORT = 3000, DB_URL = '' } = process.env;
 
@@ -11,6 +13,8 @@ mongoose.connect(DB_URL).catch((error) => {
   // eslint-disable-next-line no-console
   console.log(error);
 });
+
+app.use('/users', userRoutes);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
