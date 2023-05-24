@@ -10,7 +10,7 @@ export const getCards = async (
   next: NextFunction,
 ) => {
   try {
-    const cards = await Card.find({});
+    const cards = await Card.find({}).populate(['likes', 'owner']);
     res.send(cards);
   } catch (error) {
     next(error);
@@ -39,7 +39,7 @@ export const deleteCard = async (
 ) => {
   const { cardId } = req.params;
   try {
-    const card = await Card.findByIdAndDelete(cardId);
+    const card = await Card.findByIdAndDelete(cardId).populate(['likes', 'owner']);
     if (!card) {
       next(new NotFoundError(ErrorMessages.CARD_NOT_FOUND));
     } else {
@@ -62,7 +62,7 @@ export const likeCard = async (
       cardId,
       { $addToSet: { likes: userId } },
       { new: true },
-    );
+    ).populate(['likes', 'owner']);
     if (!card) {
       next(new NotFoundError(ErrorMessages.CARD_NOT_FOUND));
     } else {
@@ -85,7 +85,7 @@ export const dislikeCard = async (
       cardId,
       { $pull: { likes: userId } },
       { new: true },
-    );
+    ).populate(['likes', 'owner']);
     if (!card) {
       next(new NotFoundError(ErrorMessages.CARD_NOT_FOUND));
     } else {
