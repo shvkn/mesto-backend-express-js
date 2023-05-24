@@ -4,7 +4,6 @@ import User from '../models/user';
 import NotFoundError from '../shared/not-found-error';
 import { ErrorMessages } from '../shared/constants';
 
-// eslint-disable-next-line import/prefer-default-export
 export const getUsers = async (
   req: Request,
   res: Response,
@@ -45,6 +44,28 @@ export const createUser = async (
   try {
     const user = await User.create({ name, about, avatar });
     res.send(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.user._id;
+  const userData = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(userId, userData, {
+      new: true,
+      runValidators: true,
+    });
+    if (!user) {
+      next(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
+    } else {
+      res.send(user);
+    }
   } catch (error) {
     next(error);
   }
