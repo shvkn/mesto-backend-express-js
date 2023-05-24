@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 
 import userRoutes from './routes/users';
 import globalErrorHandler from './shared/global-error-handler';
+import authMiddleware from './middlewares/auth-middleware';
 
 dotenv.config();
 const { PORT = 3000, DB_URL = '' } = process.env;
@@ -16,6 +17,7 @@ mongoose.connect(DB_URL).catch((error) => {
 });
 
 app.use(express.json());
+app.use(authMiddleware);
 
 app.use('/users', userRoutes);
 
