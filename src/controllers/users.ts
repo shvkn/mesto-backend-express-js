@@ -55,12 +55,42 @@ export const updateProfile = async (
   next: NextFunction
 ) => {
   const userId = req.user._id;
-  const userData = req.body;
+  const { name, about } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(userId, userData, {
-      new: true,
-      runValidators: true,
-    });
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { name, about },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    if (!user) {
+      next(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
+    } else {
+      res.send(user);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvatar = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.user._id;
+  const { avatar } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatar },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!user) {
       next(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
     } else {
