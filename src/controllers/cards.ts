@@ -72,3 +72,26 @@ export const likeCard = async (
     next(error);
   }
 };
+
+export const dislikeCard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { cardId } = req.params;
+  const userId = req.user._id;
+  try {
+    const card = await Card.findByIdAndUpdate(
+      cardId,
+      { $pull: { likes: userId } },
+      { new: true },
+    );
+    if (!card) {
+      next(new NotFoundError(ErrorMessages.CARD_NOT_FOUND));
+    } else {
+      res.send(card);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
