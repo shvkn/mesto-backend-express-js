@@ -15,6 +15,8 @@ mongoose.connect(DB_URL).catch((error) => {
   console.log(error);
 });
 
+app.use(express.json());
+
 app.use('/users', userRoutes);
 
 app.use(globalErrorHandler);

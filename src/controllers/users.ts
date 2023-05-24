@@ -35,3 +35,17 @@ export const getUserById = async (
     next(error);
   }
 };
+
+export const createUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { name, about, avatar } = req.body;
+  try {
+    const user = await User.create({ name, about, avatar });
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+};
