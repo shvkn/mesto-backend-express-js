@@ -49,3 +49,26 @@ export const deleteCard = async (
     next(error);
   }
 };
+
+export const likeCard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { cardId } = req.params;
+  const userId = req.user._id;
+  try {
+    const card = await Card.findByIdAndUpdate(
+      cardId,
+      { $addToSet: { likes: userId } },
+      { new: true },
+    );
+    if (!card) {
+      next(new NotFoundError(ErrorMessages.CARD_NOT_FOUND));
+    } else {
+      res.send(card);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
