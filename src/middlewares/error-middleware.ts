@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { ErrorMessages, ErrorNames } from '../shared/constants';
+import AuthError from '../shared/auth-error';
 
 const errorMiddleware = (
   err: Error,
@@ -12,14 +13,16 @@ const errorMiddleware = (
 ) => {
   const { name = ErrorNames.UNKNOWN_ERR } = err;
   let { message = ErrorMessages.DEFAULT } = err;
-
   if (name === ErrorNames.NOT_FOUND_ERR) {
     res.status(StatusCodes.NOT_FOUND);
   } else if (name === ErrorNames.VALIDATION_ERR || name === ErrorNames.CAST_ERROR) {
     res.status(StatusCodes.BAD_REQUEST);
+  } else if (err instanceof AuthError) {
+    message = message.length > 0 ? message : ErrorMessages.AUTH_ERROR;
+    res.status(StatusCodes.UNAUTHORIZED);
   } else {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     message = ErrorMessages.DEFAULT;
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR);
   }
 
   res.send({ message });

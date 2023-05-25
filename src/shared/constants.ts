@@ -9,6 +9,8 @@ export const ErrorMessages = {
   USER_NOT_FOUND: 'Запрашиваемый пользователь не найден',
   DEFAULT: 'На сервере произошла ошибка',
   WRONG_ROUTE: 'Ресурс не найден. Проверьте URL и метод запроса',
+  AUTH_ERROR: 'Ошибка авторизации',
+  WRONG_CREDENTIALS: 'Неверное имя пользователя или пароль',
 };
 export const ValidationMessages = {
   INVALID_EMAIL: 'Введен некорректный email',
@@ -17,4 +19,4 @@ export const DefaultUser = {
   NAME: 'Жак-Ив Кусто',
   ABOUT: 'Исследователь',
   AVATAR: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-}
+};

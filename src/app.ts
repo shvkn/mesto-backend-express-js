@@ -9,6 +9,7 @@ import errorMiddleware from './middlewares/error-middleware';
 import authMiddleware from './middlewares/auth-middleware';
 import NotFoundError from './shared/not-found-error';
 import { ErrorMessages } from './shared/constants';
+import { createUser, login } from './controllers/users';
 
 dotenv.config();
 const {
@@ -29,6 +30,9 @@ app.use(authMiddleware);
 
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
+
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
   next(new NotFoundError(ErrorMessages.WRONG_ROUTE));
