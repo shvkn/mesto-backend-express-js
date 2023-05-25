@@ -10,3 +10,11 @@ export const ErrorMessages = {
   DEFAULT: 'На сервере произошла ошибка',
   WRONG_ROUTE: 'Ресурс не найден. Проверьте URL и метод запроса',
 };
+export const ValidationMessages = {
+  INVALID_EMAIL: 'Введен некорректный email',
+};
+export const DefaultUser = {
+  NAME: 'Жак-Ив Кусто',
+  ABOUT: 'Исследователь',
+  AVATAR: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+}
