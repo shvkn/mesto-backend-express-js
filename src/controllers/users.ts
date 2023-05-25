@@ -176,3 +176,15 @@ export const login = async (
     next(error);
   }
 };
+
+export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.user._id;
+  try {
+    const user = await User
+      .findById(userId)
+      .orFail(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+};
