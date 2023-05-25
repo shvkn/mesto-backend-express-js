@@ -38,12 +38,10 @@ export const getUserById = async (
 ) => {
   const { userId } = req.params;
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      next(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
-    } else {
-      res.send(user);
-    }
+    const user = await User
+      .findById(userId)
+      .orFail(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
+    res.send(user);
   } catch (error) {
     next(error);
   }
@@ -87,22 +85,18 @@ export const updateProfile = async (
     about,
   } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(
-      userId,
-      {
-        name,
-        about,
-      },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
-    if (!user) {
-      next(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
-    } else {
-      res.send(user);
-    }
+    const fields = {
+      name,
+      about,
+    };
+    const options = {
+      new: true,
+      runValidators: true,
+    };
+    const user = await User
+      .findByIdAndUpdate(userId, fields, options)
+      .orFail(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
+    res.send(user);
   } catch (error) {
     next(error);
   }
@@ -115,20 +109,15 @@ export const updateAvatar = async (
 ) => {
   const userId = req.user._id;
   const { avatar } = req.body;
+  const options = {
+    new: true,
+    runValidators: true,
+  };
   try {
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { avatar },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
-    if (!user) {
-      next(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
-    } else {
-      res.send(user);
-    }
+    const user = await User
+      .findByIdAndUpdate(userId, { avatar }, options)
+      .orFail(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
+    res.send(user);
   } catch (error) {
     next(error);
   }
@@ -143,34 +132,33 @@ export const login = async (
     email,
     password,
   } = req.body;
-
+  const secret = NODE_ENV === 'production'
+    ? JWT_SECRET as string
+    : 'dev-secret';
   try {
-    const user = await User.findOne({ email })
-      .select('+password');
-    if (!user) {
+    const {
+      password: hash,
+      ...user
+    } = await User.findOne({ email })
+      .select('+password')
+      .lean()
+      .orFail(new AuthError(ErrorMessages.WRONG_CREDENTIALS));
+
+    const matched = await bcrypt.compare(password, hash);
+    if (!matched) {
       next(new AuthError(ErrorMessages.WRONG_CREDENTIALS));
     } else {
-      const matched = await bcrypt.compare(password, user.password);
-      if (matched) {
-        const payload: IJwtToken = { _id: user._id };
-        const token = jwt.sign(
-          payload,
-          NODE_ENV === 'production' ? JWT_SECRET as string : 'dev-secret',
-          { expiresIn: ms(JWT_EXPIRES) / 1000 },
-        );
-        res.cookie('token', token, {
-          maxAge: ms(JWT_EXPIRES),
-          httpOnly: true,
-        });
-        res.send({
-          _id: user._id,
-          name: user.name,
-          about: user.about,
-          avatar: user.avatar,
-        });
-      } else {
-        next(new AuthError(ErrorMessages.WRONG_CREDENTIALS));
-      }
+      const payload: IJwtToken = { _id: user._id };
+      const token = jwt.sign(
+        payload,
+        secret,
+        { expiresIn: ms(JWT_EXPIRES) / 1000 },
+      );
+      res.cookie('token', token, {
+        maxAge: ms(JWT_EXPIRES),
+        httpOnly: true,
+      });
+      res.send(user);
     }
   } catch (error) {
     next(error);
