@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import userRoutes from './routes/users';
 import cardRoutes from './routes/cards';
 
-import globalErrorHandler from './shared/global-error-handler';
+import errorMiddleware from './middlewares/error-middleware';
 import authMiddleware from './middlewares/auth-middleware';
 
 dotenv.config();
@@ -24,7 +24,7 @@ app.use(authMiddleware);
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 
-app.use(globalErrorHandler);
+app.use(errorMiddleware);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console

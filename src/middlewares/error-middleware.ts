@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import { ErrorMessages, ErrorNames } from './constants';
+import { ErrorMessages, ErrorNames } from '../shared/constants';
 
-const globalErrorHandler = (
+const errorMiddleware = (
   err: Error,
   req: Request,
   res: Response,
@@ -25,4 +25,4 @@ const globalErrorHandler = (
   res.send({ message });
 };
 
-export default globalErrorHandler;
+export default errorMiddleware;
