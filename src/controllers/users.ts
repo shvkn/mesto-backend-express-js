@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 
 import User from '../models/user';
 import NotFoundError from '../shared/not-found-error';
 import { ErrorMessages } from '../shared/constants';
+
+dotenv.config();
+const { SALT_ROUNDS = 10 } = process.env;
 
 export const getUsers = async (
   req: Request,
@@ -40,9 +45,23 @@ export const createUser = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
+  const salt = await bcrypt.genSalt(Number(SALT_ROUNDS));
+  const hash = await bcrypt.hash(password, salt);
   try {
-    const user = await User.create({ name, about, avatar });
+    const user = await User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    });
     res.send(user);
   } catch (error) {
     next(error);
@@ -55,11 +74,17 @@ export const updateProfile = async (
   next: NextFunction,
 ) => {
   const userId = req.user._id;
-  const { name, about } = req.body;
+  const {
+    name,
+    about,
+  } = req.body;
   try {
     const user = await User.findByIdAndUpdate(
       userId,
-      { name, about },
+      {
+        name,
+        about,
+      },
       {
         new: true,
         runValidators: true,
