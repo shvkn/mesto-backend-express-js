@@ -13,7 +13,8 @@
     "skipLibCheck": true,
     "typeRoots": [
       "@types",
-      "node_modules/@types"
+      "node_modules/@types",
+      "src/shared"
     ]
   },
   "include": [

@@ -2,17 +2,18 @@ import { NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import ms from 'ms';
 
-import User, { IUser } from '../models/user';
+import User from '../models/user';
 import NotFoundError from '../shared/not-found-error';
-import { ErrorMessages } from '../shared/constants';
 import AuthError from '../shared/auth-error';
-import { HydratedDocument } from 'mongoose';
+import { ErrorMessages } from '../shared/constants';
+import { IJwtToken } from '../shared/types';
 
 dotenv.config();
 const {
   SALT_ROUNDS = 10,
-  JWT_EXPIRES = 10080,
+  JWT_EXPIRES = '7d',
   JWT_SECRET,
   NODE_ENV,
 } = process.env;
@@ -143,10 +144,6 @@ export const login = async (
     password,
   } = req.body;
 
-  if (NODE_ENV === 'production' && !JWT_SECRET) {
-    next(new Error());
-  }
-
   try {
     const user = await User.findOne({ email })
       .select('+password');
@@ -155,13 +152,14 @@ export const login = async (
     } else {
       const matched = await bcrypt.compare(password, user.password);
       if (matched) {
+        const payload: IJwtToken = { _id: user._id };
         const token = jwt.sign(
-          { _id: user._id },
+          payload,
           NODE_ENV === 'production' ? JWT_SECRET as string : 'dev-secret',
-          { expiresIn: Number(JWT_EXPIRES) },
+          { expiresIn: ms(JWT_EXPIRES) / 1000 },
         );
         res.cookie('token', token, {
-          maxAge: Number(JWT_EXPIRES),
+          maxAge: ms(JWT_EXPIRES),
           httpOnly: true,
         });
         res.send({

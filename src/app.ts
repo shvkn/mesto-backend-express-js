@@ -1,23 +1,21 @@
 import dotenv from 'dotenv';
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 
+import { createUser, login } from './controllers/users';
 import userRoutes from './routes/users';
 import cardRoutes from './routes/cards';
-
 import errorMiddleware from './middlewares/error-middleware';
 import authMiddleware from './middlewares/auth-middleware';
 import NotFoundError from './shared/not-found-error';
 import { ErrorMessages } from './shared/constants';
-import { createUser, login } from './controllers/users';
 
 dotenv.config();
 const {
   PORT = 3000,
-  DB_URL = ''
+  DB_URL = '',
 } = process.env;
-
-const app = express();
 
 mongoose.connect(DB_URL)
   .catch((error) => {
@@ -25,14 +23,17 @@ mongoose.connect(DB_URL)
     console.log(error);
   });
 
-app.use(express.json());
-app.use(authMiddleware);
+const app = express();
 
-app.use('/users', userRoutes);
-app.use('/cards', cardRoutes);
+app.use(cookieParser());
+app.use(express.json());
 
 app.post('/signin', login);
 app.post('/signup', createUser);
+
+app.use(authMiddleware);
+app.use('/users', userRoutes);
+app.use('/cards', cardRoutes);
 
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
   next(new NotFoundError(ErrorMessages.WRONG_ROUTE));

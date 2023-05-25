@@ -1,11 +1,9 @@
-import mongoose from 'mongoose';
+import { IJwtToken } from '../../src/shared/types';
 
 declare global {
   namespace Express {
     interface Request {
-      user: {
-        _id: mongoose.Types.ObjectId | string;
-      };
+      user: IJwtToken;
     }
   }
 }

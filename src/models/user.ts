@@ -3,7 +3,7 @@ import isEmail from 'validator/lib/isEmail';
 
 import { DefaultUser, ValidationMessages } from '../shared/constants';
 
-export interface IUser {
+interface IUser {
   name: string;
   about: string;
   avatar: string;
@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema<IUser>({
   password: {
     type: String,
     required: true,
-    // select: false,
+    select: false,
   },
 });
 
