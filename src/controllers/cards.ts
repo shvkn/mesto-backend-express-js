@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 
 import Card from '../models/card';
-import NotFoundError from '../shared/not-found-error';
+import NotFoundError from '../shared/errors/not-found-error';
 import { ErrorMessages } from '../shared/constants';
-import ForbiddenError from '../shared/forbidden-error';
+import ForbiddenError from '../shared/errors/forbidden-error';
 
 export const getCards = async (
   req: Request,
@@ -54,7 +54,7 @@ export const deleteCard = async (
         owner: req.user._id,
       })
       .populate(['likes', 'owner'])
-      .orFail(new ForbiddenError(ErrorMessages.CARD_NOT_FOUND));
+      .orFail(new ForbiddenError(ErrorMessages.Card.NOT_FOUND));
     res.send(card);
   } catch (error) {
     next(error);
@@ -76,7 +76,7 @@ export const likeCard = async (
     )
       .populate(['likes', 'owner']);
     if (!card) {
-      next(new NotFoundError(ErrorMessages.CARD_NOT_FOUND));
+      next(new NotFoundError(ErrorMessages.Card.NOT_FOUND));
     } else {
       res.send(card);
     }
@@ -100,7 +100,7 @@ export const dislikeCard = async (
     )
       .populate(['likes', 'owner']);
     if (!card) {
-      next(new NotFoundError(ErrorMessages.CARD_NOT_FOUND));
+      next(new NotFoundError(ErrorMessages.Card.NOT_FOUND));
     } else {
       res.send(card);
     }

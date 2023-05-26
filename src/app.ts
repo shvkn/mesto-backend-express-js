@@ -9,7 +9,7 @@ import userRoutes from './routes/users';
 import cardRoutes from './routes/cards';
 import errorMiddleware from './middlewares/error-middleware';
 import authMiddleware from './middlewares/auth-middleware';
-import NotFoundError from './shared/not-found-error';
+import NotFoundError from './shared/errors/not-found-error';
 import { ErrorMessages } from './shared/constants';
 
 dotenv.config();
@@ -21,26 +21,33 @@ const {
 mongoose.connect(DB_URL)
   .catch((error) => {
     // eslint-disable-next-line no-console
-    console.log(error);
+    console.error(error);
   });
 
 const app = express();
-
 app.use(cookieParser());
 app.use(express.json());
 
 app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  }),
+  body: Joi.object()
+    .keys({
+      email: Joi.string()
+        .email()
+        .required(),
+      password: Joi.string()
+        .required(),
+    }),
 }), login);
 
 app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  }),
+  body: Joi.object()
+    .keys({
+      email: Joi.string()
+        .email()
+        .required(),
+      password: Joi.string()
+        .required(),
+    }),
 }), createUser);
 
 app.use(authMiddleware);
@@ -48,7 +55,7 @@ app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
-  next(new NotFoundError(ErrorMessages.WRONG_ROUTE));
+  next(new NotFoundError(ErrorMessages.Routes.NOT_FOUND));
 });
 
 app.use(errors());

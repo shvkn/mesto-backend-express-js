@@ -23,7 +23,7 @@ const cardSchema = new mongoose.Schema<ICard>({
     required: true,
     validate: {
       validator: isURL,
-      message: ValidationMessages.INVALID_URL,
+      message: ValidationMessages.URL,
     },
   },
   owner: {

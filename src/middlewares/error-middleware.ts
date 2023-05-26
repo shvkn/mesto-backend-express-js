@@ -1,31 +1,41 @@
+import mongoose from 'mongoose';
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import { ErrorMessages, ErrorNames } from '../shared/constants';
-import AuthError from '../shared/auth-error';
-import ForbiddenError from '../shared/forbidden-error';
+import { ErrorMessages } from '../shared/constants';
+import AuthError from '../shared/errors/auth-error';
+import ForbiddenError from '../shared/errors/forbidden-error';
+import NotFoundError from '../shared/errors/not-found-error';
 
 const errorMiddleware = (
-  err: Error,
+  err: Error | mongoose.Error,
   req: Request,
   res: Response,
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   next: NextFunction,
 ) => {
-  const { name = ErrorNames.UNKNOWN_ERR } = err;
-  let { message = ErrorMessages.DEFAULT } = err;
-  if (name === ErrorNames.NOT_FOUND_ERR) {
-    res.status(StatusCodes.NOT_FOUND);
-  } else if (name === ErrorNames.VALIDATION_ERR || name === ErrorNames.CAST_ERROR) {
-    res.status(StatusCodes.BAD_REQUEST);
+  const {
+    NOT_FOUND,
+    UNAUTHORIZED,
+    INTERNAL_SERVER_ERROR,
+    FORBIDDEN,
+    BAD_REQUEST,
+  } = StatusCodes;
+
+  let { message } = err;
+
+  if (err instanceof NotFoundError) {
+    res.status(NOT_FOUND);
+  } else if (err instanceof mongoose.Error.ValidationError) {
+    res.status(BAD_REQUEST);
   } else if (err instanceof AuthError) {
-    message = message.length > 0 ? message : ErrorMessages.AUTH_ERROR;
-    res.status(StatusCodes.UNAUTHORIZED);
+    message = message.length > 0 ? message : ErrorMessages.Auth.DEFAULT;
+    res.status(UNAUTHORIZED);
   } else if (err instanceof ForbiddenError) {
-    res.status(StatusCodes.FORBIDDEN);
+    res.status(FORBIDDEN);
   } else {
     message = ErrorMessages.DEFAULT;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+    res.status(INTERNAL_SERVER_ERROR);
   }
 
   res.send({ message });

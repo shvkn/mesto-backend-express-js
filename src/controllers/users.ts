@@ -5,8 +5,8 @@ import jwt from 'jsonwebtoken';
 import ms from 'ms';
 
 import User from '../models/user';
-import NotFoundError from '../shared/not-found-error';
-import AuthError from '../shared/auth-error';
+import NotFoundError from '../shared/errors/not-found-error';
+import AuthError from '../shared/errors/auth-error';
 import { ErrorMessages } from '../shared/constants';
 import { IJwtToken } from '../shared/types';
 
@@ -40,7 +40,7 @@ export const getUserById = async (
   try {
     const user = await User
       .findById(userId)
-      .orFail(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
+      .orFail(new NotFoundError(ErrorMessages.User.NOT_FOUND));
     res.send(user);
   } catch (error) {
     next(error);
@@ -95,7 +95,7 @@ export const updateProfile = async (
     };
     const user = await User
       .findByIdAndUpdate(userId, fields, options)
-      .orFail(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
+      .orFail(new NotFoundError(ErrorMessages.User.NOT_FOUND));
     res.send(user);
   } catch (error) {
     next(error);
@@ -116,7 +116,7 @@ export const updateAvatar = async (
   try {
     const user = await User
       .findByIdAndUpdate(userId, { avatar }, options)
-      .orFail(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
+      .orFail(new NotFoundError(ErrorMessages.User.NOT_FOUND));
     res.send(user);
   } catch (error) {
     next(error);
@@ -142,11 +142,11 @@ export const login = async (
     } = await User.findOne({ email })
       .select('+password')
       .lean()
-      .orFail(new AuthError(ErrorMessages.WRONG_CREDENTIALS));
+      .orFail(new AuthError(ErrorMessages.Auth.WRONG_CREDENTIALS));
 
     const matched = await bcrypt.compare(password, hash);
     if (!matched) {
-      next(new AuthError(ErrorMessages.WRONG_CREDENTIALS));
+      next(new AuthError(ErrorMessages.Auth.WRONG_CREDENTIALS));
     } else {
       const payload: IJwtToken = { _id: user._id };
       const token = jwt.sign(
@@ -170,7 +170,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
   try {
     const user = await User
       .findById(userId)
-      .orFail(new NotFoundError(ErrorMessages.USER_NOT_FOUND));
+      .orFail(new NotFoundError(ErrorMessages.User.NOT_FOUND));
     res.send(user);
   } catch (error) {
     next(error);

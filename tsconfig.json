@@ -14,7 +14,6 @@
     "typeRoots": [
       "@types",
       "node_modules/@types",
-      "src/shared"
     ]
   },
   "include": [

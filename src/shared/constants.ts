@@ -1,21 +1,23 @@
-export const ErrorNames = {
-  UNKNOWN_ERR: 'UnknownError',
-  NOT_FOUND_ERR: 'NotFoundError',
-  VALIDATION_ERR: 'ValidationError',
-  CAST_ERROR: 'CastError',
-};
 export const ErrorMessages = {
-  CARD_NOT_FOUND: 'Запрашиваемая карточка не найдена',
-  USER_NOT_FOUND: 'Запрашиваемый пользователь не найден',
+  Card: {
+    NOT_FOUND: 'Запрашиваемая карточка не найдена',
+    DELETE: 'Можно удалять только собственные посты',
+  },
+  User: {
+    NOT_FOUND: 'Запрашиваемый пользователь не найден',
+  },
+  Auth: {
+    DEFAULT: 'Ошибка авторизации',
+    WRONG_CREDENTIALS: 'Неверные имя пользователя или пароль',
+  },
+  Routes: {
+    NOT_FOUND: 'Ресурс не найден. Проверьте URL и метод запроса',
+  },
   DEFAULT: 'На сервере произошла ошибка',
-  WRONG_ROUTE: 'Ресурс не найден. Проверьте URL и метод запроса',
-  AUTH_ERROR: 'Ошибка авторизации',
-  WRONG_CREDENTIALS: 'Неверное имя пользователя или пароль',
-  COULD_REMOVE_OWN_CARDS: 'Можно удалять только собственные посты',
 };
 export const ValidationMessages = {
-  INVALID_EMAIL: 'Введен некорректный email',
-  INVALID_URL: 'Некорректный URL',
+  EMAIL: 'Введен некорректный email',
+  URL: 'Некорректный URL',
 };
 export const DefaultUser = {
   NAME: 'Жак-Ив Кусто',

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-import AuthError from '../shared/auth-error';
+import AuthError from '../shared/errors/auth-error';
 import { IJwtToken } from '../shared/types';
 
 dotenv.config();
