@@ -11,6 +11,7 @@ import errorMiddleware from './middlewares/error-middleware';
 import authMiddleware from './middlewares/auth-middleware';
 import NotFoundError from './shared/errors/not-found-error';
 import { ErrorMessages } from './shared/constants';
+import { errorLogger, requestLogger } from './middlewares/logger';
 
 dotenv.config();
 const {
@@ -27,6 +28,7 @@ mongoose.connect(DB_URL)
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
+app.use(requestLogger);
 
 app.post('/signin', celebrate({
   body: Joi.object()
@@ -58,6 +60,7 @@ app.all('*', (req: Request, res: Response, next: NextFunction) => {
   next(new NotFoundError(ErrorMessages.Routes.NOT_FOUND));
 });
 
+app.use(errorLogger);
 app.use(errors());
 app.use(errorMiddleware);
 
