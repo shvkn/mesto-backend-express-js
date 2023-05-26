@@ -23,7 +23,6 @@ const errorMiddleware = (
   } = StatusCodes;
 
   let { message } = err;
-
   if (err instanceof NotFoundError) {
     res.status(NOT_FOUND);
   } else if (err instanceof mongoose.Error.ValidationError) {
