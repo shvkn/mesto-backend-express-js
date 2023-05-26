@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 
 import { ErrorMessages, ErrorNames } from '../shared/constants';
 import AuthError from '../shared/auth-error';
+import ForbiddenError from '../shared/forbidden-error';
 
 const errorMiddleware = (
   err: Error,
@@ -20,6 +21,8 @@ const errorMiddleware = (
   } else if (err instanceof AuthError) {
     message = message.length > 0 ? message : ErrorMessages.AUTH_ERROR;
     res.status(StatusCodes.UNAUTHORIZED);
+  } else if (err instanceof ForbiddenError) {
+    res.status(StatusCodes.FORBIDDEN);
   } else {
     message = ErrorMessages.DEFAULT;
     res.status(StatusCodes.INTERNAL_SERVER_ERROR);

@@ -11,9 +11,11 @@ export const ErrorMessages = {
   WRONG_ROUTE: 'Ресурс не найден. Проверьте URL и метод запроса',
   AUTH_ERROR: 'Ошибка авторизации',
   WRONG_CREDENTIALS: 'Неверное имя пользователя или пароль',
+  COULD_REMOVE_OWN_CARDS: 'Можно удалять только собственные посты',
 };
 export const ValidationMessages = {
   INVALID_EMAIL: 'Введен некорректный email',
+  INVALID_URL: 'Некорректный URL',
 };
 export const DefaultUser = {
   NAME: 'Жак-Ив Кусто',
