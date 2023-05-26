@@ -46,16 +46,17 @@ export const deleteCard = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const userId = req.user._id;
   const { cardId } = req.params;
   try {
     const card = await Card
-      .findOneAndDelete({
-        _id: cardId,
-        owner: req.user._id,
-      })
-      .populate(['likes', 'owner'])
-      .orFail(new ForbiddenError(ErrorMessages.Card.DELETE));
-    res.send(card);
+      .findById(cardId)
+      .orFail(new NotFoundError(ErrorMessages.Card.NOT_FOUND));
+    if (card.owner !== userId) {
+      next(new ForbiddenError(ErrorMessages.Card.DELETE));
+    } else {
+      res.send(card);
+    }
   } catch (error) {
     next(error);
   }
