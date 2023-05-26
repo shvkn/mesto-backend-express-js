@@ -20,13 +20,18 @@ const errorMiddleware = (
     INTERNAL_SERVER_ERROR,
     FORBIDDEN,
     BAD_REQUEST,
+    CONFLICT,
   } = StatusCodes;
 
   let { message } = err;
   if (err instanceof NotFoundError) {
     res.status(NOT_FOUND);
   } else if (err instanceof mongoose.Error.ValidationError) {
-    res.status(BAD_REQUEST);
+    if (err.errors?.email?.kind === 'unique') {
+      res.status(CONFLICT);
+    } else {
+      res.status(BAD_REQUEST);
+    }
   } else if (err instanceof AuthError) {
     message = message.length > 0 ? message : ErrorMessages.Auth.DEFAULT;
     res.status(UNAUTHORIZED);
