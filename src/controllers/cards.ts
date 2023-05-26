@@ -54,7 +54,7 @@ export const deleteCard = async (
         owner: req.user._id,
       })
       .populate(['likes', 'owner'])
-      .orFail(new ForbiddenError(ErrorMessages.Card.NOT_FOUND));
+      .orFail(new ForbiddenError(ErrorMessages.Card.DELETE));
     res.send(card);
   } catch (error) {
     next(error);
