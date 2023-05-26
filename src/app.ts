@@ -12,6 +12,7 @@ import authMiddleware from './middlewares/auth-middleware';
 import NotFoundError from './shared/errors/not-found-error';
 import { ErrorMessages } from './shared/constants';
 import { errorLogger, requestLogger } from './middlewares/logger';
+import validateUrl from './shared/validate-url';
 
 dotenv.config();
 const {
@@ -49,6 +50,14 @@ app.post('/signup', celebrate({
         .required(),
       password: Joi.string()
         .required(),
+      name: Joi.string()
+        .min(2)
+        .max(30),
+      about: Joi.string()
+        .min(2)
+        .max(200),
+      avatar: Joi.string()
+        .custom(validateUrl),
     }),
 }), createUser);
 
