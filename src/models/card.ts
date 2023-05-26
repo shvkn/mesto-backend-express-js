@@ -1,4 +1,7 @@
 import mongoose from 'mongoose';
+import isURL from 'validator/lib/isURL';
+
+import { ValidationMessages } from '../shared/constants';
 
 interface ICard {
   name: string;
@@ -18,6 +21,10 @@ const cardSchema = new mongoose.Schema<ICard>({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: isURL,
+      message: ValidationMessages.INVALID_URL,
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

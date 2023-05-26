@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
+import { celebrate, errors, Joi } from 'celebrate';
 
 import { createUser, login } from './controllers/users';
 import userRoutes from './routes/users';
@@ -28,8 +29,19 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+  }),
+}), login);
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+  }),
+}), createUser);
 
 app.use(authMiddleware);
 app.use('/users', userRoutes);
@@ -39,6 +51,7 @@ app.all('*', (req: Request, res: Response, next: NextFunction) => {
   next(new NotFoundError(ErrorMessages.WRONG_ROUTE));
 });
 
+app.use(errors());
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {
