@@ -2,37 +2,17 @@ import { Router } from 'express';
 import { celebrate, Joi } from 'celebrate';
 
 import {
-  createUser,
   getProfile,
   getUserById,
   getUsers,
   updateAvatar,
   updateProfile,
 } from '../controllers/users';
+import validateUrl from '../shared/validate-url';
 
-const urlPattern = /(https?:\/\/)(www\.)?((?!\bwww\b)[-a-zA-Z0-9]+\.)+([a-zA-Z]+)([-a-zA-Z0-9._~:/?#[\]@!$&'()*+,;=]+)?/;
 const router = Router();
 
 router.get('/', getUsers);
-
-router.post('/', celebrate({
-  body: Joi.object()
-    .keys({
-      email: Joi.string()
-        .email()
-        .required(),
-      password: Joi.string()
-        .required(),
-      name: Joi.string()
-        .min(2)
-        .max(30),
-      about: Joi.string()
-        .min(2)
-        .max(200),
-      avatar: Joi.string()
-        .regex(urlPattern),
-    }),
-}), createUser);
 
 router.get('/me', getProfile);
 
@@ -45,18 +25,16 @@ router.patch('/me', celebrate({
       about: Joi.string()
         .min(2)
         .max(200),
-    })
-    .unknown(true),
+    }),
 }), updateProfile);
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object()
     .keys({
       avatar: Joi.string()
-        .regex(urlPattern)
+        .custom(validateUrl)
         .required(),
-    })
-    .unknown(true),
+    }),
 }), updateAvatar);
 
 router.get('/:userId', celebrate({
