@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-import isEmail from 'validator/lib/isEmail';
-import mongooseUniqueValidator from 'mongoose-unique-validator';
+import validator from 'validator';
 
 import { DefaultUser, ValidationMessages } from '../shared/constants';
 
@@ -28,13 +27,17 @@ const userSchema = new mongoose.Schema<IUser>({
   avatar: {
     type: String,
     default: DefaultUser.AVATAR,
+    validate: {
+      validator: validator.isURL,
+      message: ValidationMessages.URL,
+    },
   },
   email: {
     type: String,
     required: true,
     unique: true,
     validate: {
-      validator: isEmail,
+      validator: validator.isEmail,
       message: ValidationMessages.EMAIL,
     },
   },
@@ -44,7 +47,5 @@ const userSchema = new mongoose.Schema<IUser>({
     select: false,
   },
 });
-
-userSchema.plugin(mongooseUniqueValidator, { type: 'unique' });
 
 export default mongoose.model<IUser>('user', userSchema);

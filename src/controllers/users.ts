@@ -3,12 +3,15 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import ms from 'ms';
+import mongoose from 'mongoose';
 
 import User from '../models/user';
-import NotFoundError from '../shared/errors/not-found-error';
+import NotFoundedError from '../shared/errors/not-founded-error';
 import AuthError from '../shared/errors/auth-error';
 import { ErrorMessages } from '../shared/constants';
 import { IJwtToken } from '../shared/types';
+import BadRequestError from '../shared/errors/bad-request-error';
+import ConflictError from '../shared/errors/conflict-error';
 
 dotenv.config();
 const {
@@ -40,10 +43,14 @@ export const getUserById = async (
   try {
     const user = await User
       .findById(userId)
-      .orFail(new NotFoundError(ErrorMessages.User.NOT_FOUND));
+      .orFail(new NotFoundedError(ErrorMessages.User.NOT_FOUND));
     res.send(user);
   } catch (error) {
-    next(error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      next(new BadRequestError(error.message));
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -68,14 +75,21 @@ export const createUser = async (
       email,
       password: hash,
     });
-    res.send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      email: user.email,
-    });
+    res.status(201)
+      .send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
   } catch (error) {
-    next(error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      next(new BadRequestError(error.message));
+    } else if (error.name === 'MongoServerError' && error.code === 11000) {
+      next(new ConflictError(ErrorMessages.User.CONFLICT));
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -100,10 +114,14 @@ export const updateProfile = async (
     };
     const user = await User
       .findByIdAndUpdate(userId, fields, options)
-      .orFail(new NotFoundError(ErrorMessages.User.NOT_FOUND));
+      .orFail(new NotFoundedError(ErrorMessages.User.NOT_FOUND));
     res.send(user);
   } catch (error) {
-    next(error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      next(new BadRequestError(error.message));
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -121,10 +139,14 @@ export const updateAvatar = async (
   try {
     const user = await User
       .findByIdAndUpdate(userId, { avatar }, options)
-      .orFail(new NotFoundError(ErrorMessages.User.NOT_FOUND));
+      .orFail(new NotFoundedError(ErrorMessages.User.NOT_FOUND));
     res.send(user);
   } catch (error) {
-    next(error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      next(new BadRequestError(error.message));
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -166,7 +188,13 @@ export const login = async (
       res.send(user);
     }
   } catch (error) {
-    next(error);
+    if (error instanceof jwt.JsonWebTokenError) {
+      next(new AuthError(error.message));
+    } else if (error instanceof mongoose.Error.ValidationError) {
+      next(new BadRequestError(error.message));
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -175,7 +203,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
   try {
     const user = await User
       .findById(userId)
-      .orFail(new NotFoundError(ErrorMessages.User.NOT_FOUND));
+      .orFail(new NotFoundedError(ErrorMessages.User.NOT_FOUND));
     res.send(user);
   } catch (error) {
     next(error);

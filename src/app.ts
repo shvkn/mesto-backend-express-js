@@ -9,7 +9,7 @@ import userRoutes from './routes/users';
 import cardRoutes from './routes/cards';
 import errorMiddleware from './middlewares/error-middleware';
 import authMiddleware from './middlewares/auth-middleware';
-import NotFoundError from './shared/errors/not-found-error';
+import NotFoundedError from './shared/errors/not-founded-error';
 import { ErrorMessages } from './shared/constants';
 import { errorLogger, requestLogger } from './middlewares/logger';
 import validateUrl from './shared/validate-url';
@@ -66,7 +66,7 @@ app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
-  next(new NotFoundError(ErrorMessages.Routes.NOT_FOUND));
+  next(new NotFoundedError(ErrorMessages.Routes.NOT_FOUND));
 });
 
 app.use(errorLogger);

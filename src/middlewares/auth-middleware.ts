@@ -22,11 +22,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     req.user = payload as IJwtToken;
     next();
   } catch (error) {
-    if (error instanceof Error) {
-      next(new AuthError(error.message));
-    } else {
-      next(new AuthError(String(error)));
-    }
+    next(new AuthError((error as jwt.JsonWebTokenError).message));
   }
 };
 

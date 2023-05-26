@@ -1,13 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
 import HttpError from './http-error';
 
-class ForbiddenError extends HttpError {
+class ConflictError extends HttpError {
   statusCode: StatusCodes;
 
   constructor(message = '') {
     super(message);
-    this.statusCode = StatusCodes.FORBIDDEN;
+    this.statusCode = StatusCodes.CONFLICT;
   }
 }
 
-export default ForbiddenError;
+export default ConflictError;

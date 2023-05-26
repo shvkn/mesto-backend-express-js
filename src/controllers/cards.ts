@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
+import mongoose from 'mongoose';
 
 import Card from '../models/card';
-import NotFoundError from '../shared/errors/not-found-error';
+import NotFoundedError from '../shared/errors/not-founded-error';
 import { ErrorMessages } from '../shared/constants';
 import ForbiddenError from '../shared/errors/forbidden-error';
+import BadRequestError from '../shared/errors/bad-request-error';
 
 export const getCards = async (
   req: Request,
@@ -35,9 +37,13 @@ export const createCard = async (
       owner,
       link,
     });
-    res.send(card);
+    res.status(201).send(card);
   } catch (error) {
-    next(error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      next(new BadRequestError(error.message));
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -51,14 +57,20 @@ export const deleteCard = async (
   try {
     const card = await Card
       .findById(cardId)
-      .orFail(new NotFoundError(ErrorMessages.Card.NOT_FOUND));
-    if (card.owner !== userId) {
+      .orFail(new NotFoundedError(ErrorMessages.Card.NOT_FOUND));
+
+    if (!card.owner.equals(userId)) {
       next(new ForbiddenError(ErrorMessages.Card.DELETE));
     } else {
+      await card.remove();
       res.send(card);
     }
   } catch (error) {
-    next(error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      next(new BadRequestError(error.message));
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -77,12 +89,16 @@ export const likeCard = async (
     )
       .populate(['likes', 'owner']);
     if (!card) {
-      next(new NotFoundError(ErrorMessages.Card.NOT_FOUND));
+      next(new NotFoundedError(ErrorMessages.Card.NOT_FOUND));
     } else {
       res.send(card);
     }
   } catch (error) {
-    next(error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      next(new BadRequestError(error.message));
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -101,11 +117,15 @@ export const dislikeCard = async (
     )
       .populate(['likes', 'owner']);
     if (!card) {
-      next(new NotFoundError(ErrorMessages.Card.NOT_FOUND));
+      next(new NotFoundedError(ErrorMessages.Card.NOT_FOUND));
     } else {
       res.send(card);
     }
   } catch (error) {
-    next(error);
+    if (error instanceof mongoose.Error.ValidationError) {
+      next(new BadRequestError(error.message));
+    } else {
+      next(error);
+    }
   }
 };

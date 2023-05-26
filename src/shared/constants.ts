@@ -5,6 +5,7 @@ export const ErrorMessages = {
   },
   User: {
     NOT_FOUND: 'Запрашиваемый пользователь не найден',
+    CONFLICT: 'Пользователь с таким email уже существует',
   },
   Auth: {
     DEFAULT: 'Ошибка авторизации',
@@ -13,7 +14,7 @@ export const ErrorMessages = {
   Routes: {
     NOT_FOUND: 'Ресурс не найден. Проверьте URL и метод запроса',
   },
-  DEFAULT: 'На сервере произошла ошибка',
+  SERVER_ERROR: 'На сервере произошла ошибка',
 };
 export const ValidationMessages = {
   EMAIL: 'Введен некорректный email',
