@@ -15,10 +15,12 @@ import { errorLogger, requestLogger } from './middlewares/logger';
 import validateUrl from './shared/validate-url';
 
 dotenv.config();
+
 const {
-  PORT = 3000,
-  DB_URL = 'mongodb://localhost:27017/mestodb',
+  EXPRESS_PORT = 3000, DATABASE_HOST, DATABASE_PORT, DATABASE_NAME,
 } = process.env;
+
+const DB_URL = `mongodb://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}`;
 
 mongoose.connect(DB_URL)
   .catch((error) => {
@@ -30,6 +32,12 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(requestLogger);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 app.post('/signin', celebrate({
   body: Joi.object()
@@ -73,7 +81,7 @@ app.use(errorLogger);
 app.use(errors());
 app.use(errorMiddleware);
 
-app.listen(PORT, () => {
+app.listen(EXPRESS_PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server has been started at port: ${PORT}`);
+  console.log(`Server has been started at port: ${EXPRESS_PORT}`);
 });
