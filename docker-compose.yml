@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
+      - MONGO_INITDB_ROOT_DATABASE=${DATABASE_NAME}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-log:/var/log/mongodb
+  express:
+    depends_on:
+     - mongodb
+    build: .
+    links:
+      - mongodb:database
+    ports:
+      - "3000:3000"
+
+volumes:
+  mongodb-data:
+  mongodb-log:

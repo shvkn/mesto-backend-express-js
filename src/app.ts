@@ -17,10 +17,15 @@ import validateUrl from './shared/validate-url';
 dotenv.config();
 
 const {
-  EXPRESS_PORT = 3000, DATABASE_HOST, DATABASE_PORT, DATABASE_NAME,
+  EXPRESS_PORT = 3000,
+  DATABASE_HOST,
+  DATABASE_PORT,
+  DATABASE_NAME,
+  DATABASE_USERNAME,
+  DATABASE_PASSWORD,
 } = process.env;
 
-const DB_URL = `mongodb://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}`;
+const DB_URL = `mongodb://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}`;
 
 mongoose.connect(DB_URL)
   .catch((error) => {
@@ -32,12 +37,6 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(requestLogger);
-
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
 
 app.post('/signin', celebrate({
   body: Joi.object()
